@@ -151,7 +151,7 @@ def generation_account_number():
 
 
 def logout():
-    print("Thank you! Come again!")
+    print("Thank you! Please come again!")
 
 
 init()

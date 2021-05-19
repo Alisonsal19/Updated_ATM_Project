@@ -7,7 +7,7 @@
 # find user
 import os
 import validation
-from datetime import datetime
+from datetime import datetime, time
 
 
 user_db_path = "data/user_record/"
@@ -163,6 +163,9 @@ def auth_session_login (user_account_number):
 
 
 def auth_session_logout (user_account_number):
+    now = time.now()
+    print("Time of logout: ", now)
+    
     logout_successful = False
 
     if os.path.exists(user_db_path + str(user_account_number) + ".txt"):

@@ -176,7 +176,8 @@ def generation_account_number():
 
 def logout():
     print("Thank you! Please come again!")
-    database.delete(user_account_number)
+    want_to_logout= database.auth_session_logout(user_account_number)
+    #database.delete(user_account_number)
 
 
 init()

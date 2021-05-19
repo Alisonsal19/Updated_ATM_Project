@@ -1,1 +1,1 @@
-nick,jonas,alymail,fun,5000
+nick,jonas,alymail,fun,4990

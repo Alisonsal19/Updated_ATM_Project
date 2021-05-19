@@ -2,11 +2,12 @@ import random
 import validation
 import database
 from getpass import getpass
+from datetime import datetime
 
-# database = {
-#     4318246141: ["alison", "sal", "ansfanf", "re", 200]
-# }
 
+
+
+user_account_number = None
 user_auth = "data/auth_session/"
 
 
@@ -24,6 +25,7 @@ def init():
 
 def login():
     print(" **** LOGIN  **** ")
+    global user_account_number
 
     user_account_number = input("What is your account number? \n")
 
@@ -35,15 +37,18 @@ def login():
         user = database.auth_user(user_account_number, password)
         
         if user:
+            tracked_login = database.auth_session_login(user_account_number)
             bank_operations(user)
 
+        #maybe remove
         print("Invalid account or password")
         login()
-
 
     else:
         print("Account Number Invalid: check if there's 10 digits")
         init()
+
+
 
 
 def register():
@@ -57,7 +62,6 @@ def register():
 
     account_number = generation_account_number()
 
-    # database[account_number] = [first_name, last_name, email, password, 0]
     user_created = database.create(account_number, first_name, last_name, email, password)
 
     if user_created:
@@ -74,6 +78,11 @@ def register():
 
 def bank_operations(user):
     print("Welcome % s %s" % (user[0], user[1]))
+
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print("Current Date and Time: ", dt_string)
+
     selected_option = int(input("What would you like to do? (1) Deposit (2) Withdrawal (3) Logout (4) Report (5) Exit \n"))
 
     if selected_option == 1:
@@ -100,19 +109,27 @@ def withdrawal_operation(user):
     # deduct withdraw amount form current balance
     # display current balance
 
-
     withdrawal_amount = int(input("How much would you like to withdraw? \n"))
-    print("You withdrew $%s" % withdrawal_amount + "Take your cash \n ")
+    print("You withdrew $%s" % withdrawal_amount + " --- Take your cash \n ")
 
-    balance = int(user[4])
+    balance = int(get_current_balance(user))
     updated_balance = str(balance - int(withdrawal_amount))
-    print("Current balacne is $ %s" %updated_balance)
-    database.withdrawal(user, withdrawal_amount)
-    init()
-    pass
+    #print("Current balacne is $ %s" %updated_balance)
+   
+    set_current_balance(user, updated_balance)
+    #database.withdrawal(user, withdrawal_amount)
+
+    if database.update(user_account_number, user):
+        print("Current balacne is $%s" %updated_balance + "\n")
+        bank_operations(user)
+    else:
+        print("Invaild")
+        init()
+        pass
 
 
 def deposit_operation(user):
+
     print("******** DEPOSIT ********")
 
     # get current balance
@@ -123,12 +140,19 @@ def deposit_operation(user):
 
     depoist_amount = int(input("How much would you like to deposit?"))
     print("Deposit of $ %s \n" %depoist_amount)
-    current_balance = int(user[4])
-    new_balance = str(current_balance + int(depoist_amount))
-    print("Current balance is $ %s \n" %new_balance)
-    database.deposit(user, depoist_amount)
-    init()
-    pass
+
+    current_balance = int(get_current_balance(user))
+
+    new_balance = current_balance + depoist_amount
+
+    if database.update(user_account_number, user):
+        print("Current balance is $ %s \n" %new_balance)
+        bank_operations(user)
+    else:
+        print("Invaild")
+        init()
+    
+
 
 
 def report_problem():
@@ -152,6 +176,7 @@ def generation_account_number():
 
 def logout():
     print("Thank you! Please come again!")
+    database.delete(user_account_number)
 
 
 init()

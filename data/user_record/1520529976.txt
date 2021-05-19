@@ -1,1 +1,1 @@
-air,wind,arimail,sun,1000
+air,wind,arimail,sun,980
